@@ -9,6 +9,17 @@
       (aset d i (double (aget float-array i))))
     d))
 
+(defn fftdv [dv-samples]
+  (let [samples-d (double-array (mapv double dv-samples))
+        n (alength samples-d)
+        data (double-array (* 2 n))]
+    (dotimes [i n]
+      (aset data (* 2 i)     (aget samples-d i))
+      (aset data (inc (* 2 i)) 0.0))
+    (let [fft-instance (DoubleFFT_1D. n)]
+      (.complexForward fft-instance data))
+    data))
+
 ;; FFT funkcija
 (defn fft [samples]
   (let [samples-d (float-to-double-array samples)

@@ -1,6 +1,9 @@
 (ns signal-analyze.audio
   (:import [javax.sound.sampled AudioSystem AudioFormat AudioInputStream AudioFileFormat$Type])
-  (:require [clojure.java.io :as io]))
+  (:require [clojure.java.io :as io]
+            [uncomplicate.commons.core :refer [with-release]]
+            [uncomplicate.neanderthal.core :refer :all]
+            [uncomplicate.neanderthal.native :refer :all]))
 
 ;; Čitanje WAV fajla
 (defn read-audio [filename]
@@ -27,6 +30,20 @@
         (aset left i (/ l 32768.0))
         (aset right i (/ r 32768.0))))
     {:left left :right right}))
+
+(defn bytes-to-dv [byte-array]
+  (let [frames (quot (alength byte-array) 4)
+        left  (float-array frames)
+        right (float-array frames)]
+    (dotimes [i frames]
+      (let [idx (* i 4)
+            l (short (bit-or (aget byte-array idx)
+                             (bit-shift-left (aget byte-array (inc idx)) 8)))
+            r (short (bit-or (aget byte-array (+ idx 2))
+                             (bit-shift-left (aget byte-array (+ idx 3)) 8)))]
+        (aset left i (/ l 32768.0))
+        (aset right i (/ r 32768.0))))
+    {:left (dv (seq (double-array (map double left)))) :right (dv (seq (double-array (map double right))))}))
 
 ;; Sigurna konverzija float -> 16-bit PCM
 (defn clamp [x min-val max-val]
