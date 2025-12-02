@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="Leiningen: org.bytedeco/openblas-platform:0.3.30-1.5.12">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/org/bytedeco/openblas-platform/0.3.30-1.5.12/openblas-platform-0.3.30-1.5.12.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
