@@ -1,12 +1,11 @@
 (ns signal-analyze.core
   (:require [uncomplicate.commons.core :refer [with-release]]
             [uncomplicate.neanderthal.native :refer :all]
-            [uncomplicate.clojurecl.core :as cl]
             [signal-analyze.audio :as audio]
-            [signal-analyze.device :as device]
             [signal-analyze.fft :as fft]
             [signal-analyze.frequencies :as freq]
             [signal-analyze.linear-regression :as linear]
+            [signal-analyze.nn :as nn]
             [signal-analyze.signal :as signal]
             [clojure.java.io :as io]))
 
@@ -31,21 +30,23 @@
   (let [area 100
         room_number 3
         location 10
-        age 1
         floor 2
         basePrice 50000
         priceCoeff 2000
         roomCoeff 5000
         locationCoeff 2000
-        ageCoeff -1000
         floorCoeff 3000]
   (linear/linear-regression
     basePrice
-    [area room_number location age floor]
-    [priceCoeff roomCoeff locationCoeff ageCoeff floorCoeff])))
+    [area room_number location floor]
+    [priceCoeff roomCoeff locationCoeff floorCoeff])))
 
 (defn -main [& args]
-  (println (generate-and-filter-signal))
-  (println "Top 5 frekvencija sa notama:" (get-top-five-frequencies-and-notes-from-audio))
-  (println "Predviđena cena kuće je:" (predict-house-price))
-)
+  ;(println (generate-and-filter-signal))
+  ;(println "Top 5 frekvencija sa notama:" (get-top-five-frequencies-and-notes-from-audio))
+  ;(println "Predviđena cena kuće je:" (predict-house-price))
+  (def network (nn/init-network 4 5))
+  (def trained-network (nn/train-network network nn/training-data))
+  (def new-input [95 3 10 2])
+  (println (nn/predict trained-network new-input nn/training-data))
+  )
