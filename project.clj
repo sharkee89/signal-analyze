@@ -7,6 +7,7 @@
                  [org.uncomplicate/neanderthal-openblas "0.60.0"]
                  [org.bytedeco/openblas "0.3.30-1.5.12" :classifier "macosx-x86_64"]
                  [uncomplicate/clojurecl "0.16.2"]
+                 [uncomplicate/fluokitten "0.10.0"]
                  [org.uncomplicate/clojure-sound "0.3.0"]
                  [com.github.wendykierp/JTransforms "3.1"]]
 

@@ -2,6 +2,7 @@
   (:require [uncomplicate.commons.core :refer [with-release]]
             [uncomplicate.neanderthal.native :refer :all]
             [signal-analyze.audio :as audio]
+            [signal-analyze.dd-deep-learning-to-gpu :as dddltg]
             [signal-analyze.fft :as fft]
             [signal-analyze.frequencies :as freq]
             [signal-analyze.linear-regression :as linear]
@@ -45,8 +46,15 @@
   ;(println (generate-and-filter-signal))
   ;(println "Top 5 frekvencija sa notama:" (get-top-five-frequencies-and-notes-from-audio))
   ;(println "Predviđena cena kuće je:" (predict-house-price))
-  (def network (nn/init-network 4 5))
-  (def trained-network (nn/train-network network nn/training-data))
-  (def new-input [95 3 10 2])
-  (println (nn/predict trained-network new-input nn/training-data))
+
+  ;(def network (nn/init-network 4 5))
+  ;(def trained-network (nn/train-network network nn/training-data))
+  ;(def new-input [95 3 10 2])
+  ;(println (nn/predict trained-network new-input nn/training-data))
+  (dddltg/example-1-1)
+  (dddltg/example-1-2)
+  (println (dddltg/example-2-1))
+  (println (dddltg/example-2-2))
+  (println (dddltg/example-2-3))
+  (println (dddltg/example-2-4))
   )
