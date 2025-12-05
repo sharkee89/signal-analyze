@@ -43,38 +43,62 @@
     [area room_number location floor]
     [priceCoeff roomCoeff locationCoeff floorCoeff])))
 
-;; CPU sabiranje
+;; -----------------------------
+;; CPU simple add
+;; -----------------------------
 (defn cpu-add [a b]
   (float-array (map + a b)))
 
-;; Merenje vremena jedne funkcije (vratiti vreme u ms)
+;; CPU verzija compound_op (samo za poređenje)
+(defn cpu-compound-add [a b]
+  (float-array
+    (map (fn [x y] (+ (Math/sqrt (+ (* x x) (* y y)))
+                      (Math/sin x)
+                      (- (Math/cos y))))
+         a b)))
+
+;; -----------------------------
+;; Merenje vremena (ms)
+;; -----------------------------
 (defn measure [f]
   (let [start (System/nanoTime)]
     (f)
     (/ (double (- (System/nanoTime) start)) 1e6)))
 
-;; Benchmark za jednu veličinu vektora
+;; -----------------------------
+;; Benchmark za jednu veličinu vektora (GPU + CPU)
+;; -----------------------------
 (defn benchmark-size [n]
   (let [a (float-array (repeatedly n #(float (rand))))
         b (float-array (repeatedly n #(float (rand))))]
 
     {:n n
+     ;; Simple add CPU vs GPU (original)
      :cpu-ms (measure #(cpu-add a b))
-     :gpu-ms (measure #(vec (device/gpu-add a b)))}))
+     :gpu-ms (measure #(vec (device/gpu-add a b)))
 
-;; Benchmark za više veličina
+     ;; Compound_op CPU vs GPU
+     :cpu-compound-ms (measure #(cpu-compound-add a b))
+     :gpu-compound-ms (measure #(vec (device/gpu-compound-add a b)))}))
+
+;; -----------------------------
+;; Veličine vektora za test
+;; -----------------------------
 (def sizes [1000 10000 50000 100000 500000 1000000])
 
+;; -----------------------------
+;; Pokretanje benchmarka
+;; -----------------------------
 (defn run-benchmarks []
   (println "Running benchmarks (CPU vs GPU)...\n")
-  (doseq [{:keys [n cpu-ms gpu-ms]} (map benchmark-size sizes)]
-    (println (format "N = %-8d | CPU: %-10.3f ms | GPU: %-10.3f ms | Speedup: %.1fx"
-                     n cpu-ms gpu-ms (/ cpu-ms gpu-ms)))))
+  (doseq [{:keys [n cpu-ms gpu-ms cpu-compound-ms gpu-compound-ms]} (map benchmark-size sizes)]
+    ;; Original simple add
+    (println (format "Simple add N = %-8d | CPU: %-10.3f ms | GPU: %-10.3f ms | Speedup: %.1fx"
+                     n cpu-ms gpu-ms (/ cpu-ms gpu-ms)))
+    ;; Compound_op
+    (println (format "Compound_op N = %-8d | CPU: %-10.3f ms | GPU: %-10.3f ms | Speedup: %.1fx"
+                     n cpu-compound-ms gpu-compound-ms (/ cpu-compound-ms gpu-compound-ms)))
+    (println "---------------------------------------------------------------")))
 
 (defn -main [& args]
-  ;(def network (nn/init-network 4 5))
-  ;(def trained-network (nn/train-network network nn/training-data))
-  ;(def new-input [95 3 10 2])
-  ;(println (nn/predict trained-network new-input nn/training-data))
-  (run-benchmarks)
-  )
+  (run-benchmarks))
